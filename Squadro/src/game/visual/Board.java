@@ -106,21 +106,25 @@ public class Board {
             }
             else {
                 for (int x = piece.x - 1; x > xStart - piece.pace; x--) { // on ne traite pas dans la boucle for de la case d'arrivée
-                    if (isTherePiece(x, yStart)) {
-                        whichPieceHere(x, yStart).kill();
+                    if (piece.x != 0) {
+                        if (isTherePiece(x, yStart)) {
+                            whichPieceHere(x, yStart).kill();
+                        }
+                        piece.moveByStep();
                     }
-                    piece.moveByStep();
                 }
             }
 
-            boolean isBusy;
-            do {
-                isBusy = isTherePiece(piece.x +( piece.directionInitial? 1:-1) ,piece.y );
-                if(isBusy)
-                    whichPieceHere(piece.x+( piece.directionInitial? 1:-1), piece.y).kill();
-                piece.moveByStep();
+            if (!(piece.directionInitial == false && piece.x == 0)) {
+                boolean isBusy;
+                do {
+                    isBusy = isTherePiece(piece.x + (piece.directionInitial ? 1 : -1), piece.y);
+                    if (isBusy)
+                        whichPieceHere(piece.x + (piece.directionInitial ? 1 : -1), piece.y).kill();
+                    piece.moveByStep();
 
-            } while (isBusy);
+                } while (isBusy);
+            }
 
 
         }
@@ -137,20 +141,25 @@ public class Board {
             }
             else {
                 for (int y = piece.y + 1; y < yStart + piece.pace; y++) { // on ne traite pas dans la boucle for de la case d'arrivée
-                    if (isTherePiece(xStart, y)) {
-                        whichPieceHere(xStart, y).kill();
+                    if (piece.y != 6) {
+                        if (isTherePiece(xStart, y)) {
+                            whichPieceHere(xStart, y).kill();
+                        }
+                        piece.moveByStep();
                     }
-                    piece.moveByStep();
                 }
             }
-            boolean isBusy;
-            do {
-                isBusy = isTherePiece(piece.x ,piece.y +( piece.directionInitial? -1:1));
-                if(isBusy)
-                    whichPieceHere(piece.x, piece.y+( piece.directionInitial? -1:1)).kill();
-                piece.moveByStep();
 
-            } while (isBusy);
+            if (!(piece.directionInitial == false && piece.y == 6)) {
+                boolean isBusy;
+                do {
+                    isBusy = isTherePiece(piece.x, piece.y + (piece.directionInitial ? -1 : 1));
+                    if (isBusy)
+                        whichPieceHere(piece.x, piece.y + (piece.directionInitial ? -1 : 1)).kill();
+                    piece.moveByStep();
+
+                } while (isBusy);
+            }
 
 
         }

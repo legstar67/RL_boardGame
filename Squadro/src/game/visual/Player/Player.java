@@ -5,6 +5,7 @@ import game.visual.Piece;
 public abstract class Player {
     protected boolean isItPlayer1;
     public Piece[] pieces;
+    public boolean playRandom;
 
 
     public boolean isItPlayer1(){ return this.isItPlayer1;}
