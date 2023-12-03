@@ -11,7 +11,7 @@ public class Main {
         bd.update();
         bd.printBoard();*/
 
-        Game game = new Game();
+        Game game = new Game(10000);
         game.play(true,false);
 
 

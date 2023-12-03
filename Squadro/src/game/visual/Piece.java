@@ -35,57 +35,64 @@ public class Piece {
         }
     }
 
-    public void moveByStep(){
-        System.out.println("Piece moveByStep :");
+    public boolean moveByStep(){
+/*        System.out.println("Piece moveByStep :");
         System.out.println("Player1 " + isItPlayer1);
-        System.out.println("pace = "+ pace);
+        System.out.println("pace = "+ pace);*/
         if (isItPlayer1){
             if (directionInitial) {
-                System.out.println("x = " + x + "-->" + (x + 1));
+//                System.out.println("x = " + x + "-->" + (x + 1));
                 x += 1;
             }
             else{
-                System.out.println("x = " + x + "-->" + (x - 1));
+//                System.out.println("x = " + x + "-->" + (x - 1));
                 x -= 1;
             }
         }
         else{
             if (directionInitial) {
-                System.out.println("y = " + y + "-->" + (y - 1));
+//                System.out.println("y = " + y + "-->" + (y - 1));
                 y -= 1;
             }
             else {
-                System.out.println("y = " + y + "-->" + (y + 1));
+ //               System.out.println("y = " + y + "-->" + (y + 1));
                 y += 1;
             }
         }
-        updateDirection();
+        return updateDirection();
     }
 
-    public void updateDirection(){
+    public boolean updateDirection(){
+        boolean haveToUpdate = false;
         if (x == 6 || (!directionInitial && x == 0 )){ // only player 1 can do that
-            if (directionInitial)
+            if (directionInitial) {
+                haveToUpdate = true;
                 directionInitial = false;
+            }
+
             else
                 isItAtTheEnd = true;
         }
         else if (y == 0 || (!directionInitial && y == 6 )){ // only player 1 can do that
-            if (directionInitial)
+            if (directionInitial) {
+                haveToUpdate = true;
                 directionInitial = false;
+            }
             else
                 isItAtTheEnd = true;
         }
+        return haveToUpdate;
     }
 
     public void kill(){
-        System.out.println("---" +
+/*        System.out.println("---" +
                 "kill : piece :");
         System.out.println("Player1 " + isItPlayer1);
         System.out.println("pace = "+ pace);
         System.out.println("x = " + x);
         System.out.println("y = " + y);
 
-        System.out.println("---");
+        System.out.println("---");*/
         if (isItPlayer1) {
             if (directionInitial)
                 x = 0;

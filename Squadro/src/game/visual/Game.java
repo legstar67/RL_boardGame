@@ -12,10 +12,12 @@ public class Game {
     boolean finished;
     Scanner keyboardUser = new Scanner(System.in);
     Board board;
+    int nbRound;
 
-    public Game(){
+    public Game(int nbRound_){
         board = new Board();
         finished = false;
+        nbRound = nbRound_;
     }
 
 
@@ -70,16 +72,32 @@ public class Game {
             //TODO
         }
         else {
-            while (!finished){
-                board.update();
-                System.out.println();
-                System.out.println();
-                System.out.println();
-                board.printBoard();
-                board.move(  askPlayer(board.players[indexPlayer])  );
-                finished = board.isItFinished();
-                indexPlayer = indexPlayer == 1? 0 : 1;
+            int roundPlayed = 0;
+            int gameWonByPlayer1 = 0;
+            int gameWonByPlayer2 = 0;
+            while(roundPlayed < nbRound) {
+                board = new Board();
+                finished = false;
+                while (!finished) {
+                    board.update();
+/*                    System.out.println();
+                    System.out.println();
+                    System.out.println();
+                    board.printBoard();*/
+                    board.move(askPlayer(board.players[indexPlayer]));
+                    finished = board.isItFinished();
+                    indexPlayer = indexPlayer == 1 ? 0 : 1;
+                }
+                if (board.whoWon())
+                    gameWonByPlayer1 += 1;
+                else
+                    gameWonByPlayer2 += 1;
+                roundPlayed += 1;
+
             }
+            System.out.println("----------END OF THE GAME LOOK THE RESULT------------");
+            System.out.println("Player 1 won " + gameWonByPlayer1 + " rounds.");
+            System.out.println("Player 2 won " + gameWonByPlayer2 + " rounds.");
 
 
         }

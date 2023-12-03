@@ -98,10 +98,14 @@ public class Board {
 
             if (piece.directionInitial) {
                 for (int x = piece.x + 1; x < xStart + piece.pace; x++) { // on ne traite pas dans la boucle for de la case d'arrivée
-                    if (isTherePiece(x, yStart)) {
-                        whichPieceHere(x, yStart).kill();
+                    if (piece.x != 6) { //TODO demander à frabrice les règles en gros
+                        // là qd il arrive ou bout du premier trajet il se stop même si il lui reste des pas
+                        if (isTherePiece(x, yStart)) {
+                            whichPieceHere(x, yStart).kill();
+                        }
+                        if (piece.moveByStep())
+                            this.update();
                     }
-                    piece.moveByStep();
                 }
             }
             else {
@@ -110,7 +114,8 @@ public class Board {
                         if (isTherePiece(x, yStart)) {
                             whichPieceHere(x, yStart).kill();
                         }
-                        piece.moveByStep();
+                        if (piece.moveByStep())
+                            this.update();
                     }
                 }
             }
@@ -121,7 +126,8 @@ public class Board {
                     isBusy = isTherePiece(piece.x + (piece.directionInitial ? 1 : -1), piece.y);
                     if (isBusy)
                         whichPieceHere(piece.x + (piece.directionInitial ? 1 : -1), piece.y).kill();
-                    piece.moveByStep();
+                    if (piece.moveByStep())
+                        this.update();
 
                 } while (isBusy);
             }
@@ -132,10 +138,14 @@ public class Board {
 
             if (piece.directionInitial){
                 for (int y = piece.y - 1; y > yStart - piece.pace; y--) { // on ne traite pas dans la boucle for de la case d'arrivée
-                    if (isTherePiece(xStart, y)) {
-                        whichPieceHere(xStart, y).kill();
+                    if (piece.y != 0) { //TODO demander à frabrice les règles en gros
+                        // là qd il arrive ou bout du premier trajet il se stop même si il lui reste des pas
+                        if (isTherePiece(xStart, y)) {
+                            whichPieceHere(xStart, y).kill();
+                        }
+                        if (piece.moveByStep())
+                            this.update();
                     }
-                    piece.moveByStep();
                 }
 
             }
@@ -145,18 +155,25 @@ public class Board {
                         if (isTherePiece(xStart, y)) {
                             whichPieceHere(xStart, y).kill();
                         }
-                        piece.moveByStep();
+                        if (piece.moveByStep())
+                            this.update();
                     }
                 }
             }
 
             if (!(piece.directionInitial == false && piece.y == 6)) {
                 boolean isBusy;
+                int nbite = 0;//TODO TO REmove for debugging
                 do {
                     isBusy = isTherePiece(piece.x, piece.y + (piece.directionInitial ? -1 : 1));
                     if (isBusy)
                         whichPieceHere(piece.x, piece.y + (piece.directionInitial ? -1 : 1)).kill();
-                    piece.moveByStep();
+                    if (piece.moveByStep())
+                        this.update();
+                    if (nbite > 10){ //TODO to remove
+                        assert false;
+                    }
+                    nbite += 1;
 
                 } while (isBusy);
             }
@@ -174,18 +191,20 @@ public class Board {
     }
 
     public Piece whichPieceHere(int x, int y) {
-        System.out.println("-whichPieceHere---");
+/*        System.out.println("-whichPieceHere---");
         System.out.println("x = " + x);
-        System.out.println("y = "+ y);
+        System.out.println("y = "+ y);*/
         assert isTherePiece(x, y);
-        boolean isItPlayer1 = board[y][x][1];
+        boolean isItPlayer1 = board[sizeBoard-1-y][x][1];
 
         if (isItPlayer1){
             assert y != 0;
+            assert players[0].pieces[y - 1].x == x; //TODO a supp qd c'est réglé
         return players[0].pieces[y - 1]; // -1 bcs we search on list with index which starts to 0
         }
         else {
             assert x != 0;
+            assert players[1].pieces[x - 1].y == y; //TODO a supp qd c'est réglé
             return players[1].pieces[x - 1];
         }
 
@@ -196,6 +215,14 @@ public class Board {
         for (Player player:players){
             if(player.amIwin())
                 return true;
+
+        }
+        return false;
+    }
+    public boolean whoWon(){
+        for (Player player:players){
+            if(player.amIwin())
+                return player.isItPlayer1();
 
         }
         return false;
