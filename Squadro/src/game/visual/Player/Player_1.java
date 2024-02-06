@@ -5,7 +5,8 @@ import game.visual.Piece;
 
 public class Player_1 extends Player{
 
-    public Player_1(){
+    public Player_1(boolean isAI_){
+        super(isAI_);
         super.isItPlayer1 = true;
         super.playRandom = true;
         pieces = new Piece[]{

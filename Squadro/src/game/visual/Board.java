@@ -4,21 +4,37 @@ import game.visual.Player.Player;
 import game.visual.Player.Player_1;
 import game.visual.Player.Player_2;
 
+import java.math.BigInteger;
+
 public class Board {
 
     protected boolean[][][] boardModel; /// each case of the board is a tab of 3 boolean (piece ? , player_1 ? , directionInitial ?)
     protected boolean[][][] board;
+    protected BigInteger boardOpti;
     private int nbPiecePerPlayer = 5;
     private int sizeBoard = nbPiecePerPlayer+2;
     private String[][] boardStringsModel;
     private String[][] boardStrings;
     Player[] players;
+    boolean V2;
+    BigInteger boardV2; //on démarre de en haut à gauche (donc les 3 premiers bits sont la case interdite)
+    boolean player1IsAI;
+    boolean player2IsAI;
+
+    //                    Ʌ
+    //                    |
+    //                    |
+    //Repère du plateau : --->
 
 
 
 
-    public Board(){
+    public Board(boolean V2_, boolean player1IsAI_, boolean player2IsAI_){
+        player1IsAI = player1IsAI_;
+        player2IsAI = player2IsAI_;
         boardModel = new boolean[sizeBoard][sizeBoard][3];
+        V2 = V2_;
+        boardV2 = new BigInteger("0");
         for (int i = 0 ; i < sizeBoard ; i++){
             for(int j = 0; j < sizeBoard ; j++){
                 //don't initialize the four corners
@@ -34,7 +50,7 @@ public class Board {
         board = new boolean[sizeBoard][sizeBoard][3];
 
 
-        players = new Player[]{new Player_1(),new Player_2()};
+        players = new Player[]{new Player_1(player1IsAI_),new Player_2(player2IsAI)};
 
 
 
@@ -59,21 +75,46 @@ public class Board {
      * fonction largement optimisable
      */
     public void update(){
-        board = new boolean[sizeBoard][sizeBoard][3];
-        for (int i = 0 ; i < sizeBoard ; i++){
-            for(int j = 0; j < sizeBoard ; j++){
-                //don't initialize the four corners
-                if (( (i==0 && j==0) || (i==sizeBoard-1 && j==0) || (i==0 && j== sizeBoard-1) || (i==sizeBoard-1 && j == sizeBoard-1)   )){
-                    //board[i][j] = new boolean[]{false, false, false};
-                    board[i][j] = null;
+        if (V2)
+            boardV2 = new BigInteger("0");
+        else {
+            board = new boolean[sizeBoard][sizeBoard][3];
+            for (int i = 0; i < sizeBoard; i++) {
+                for (int j = 0; j < sizeBoard; j++) {
+                    //don't initialize the four corners
+                    if (((i == 0 && j == 0) || (i == sizeBoard - 1 && j == 0) || (i == 0 && j == sizeBoard - 1) || (i == sizeBoard - 1 && j == sizeBoard - 1))) {
+                        //board[i][j] = new boolean[]{false, false, false};
+                        board[i][j] = null;
+
+                    }
 
                 }
-
             }
         }
+
         for(Player player : players){
             for(Piece piece:player.pieces){
+                //TODO supp les comments of debugging here :
+/*                System.out.println();
+                System.out.println("-----------------------------------------------------");
+                System.out.println("-----------------------------------------------------");
+                System.out.println("BEGIN-----------------------------------------------------");
+                System.out.println();
+                printBoard();
+                System.out.println();
+                printBoardValue();*/
+
                 setPieceOnBoard(piece);
+
+/*                System.out.println();
+                printBoard();
+                System.out.println();
+                printBoardValue();
+                System.out.println("END-----------------------------------------------------");
+                System.out.println("-----------------------------------------------------");
+                System.out.println("-----------------------------------------------------");
+                System.out.println();*/
+
             }
 
         }
@@ -81,11 +122,28 @@ public class Board {
 
     }
 
-    public void setPieceOnBoard(Piece piece){
-        board[sizeBoard-1-piece.y][piece.x][0] = true;
-        board[sizeBoard-1-piece.y][piece.x][1] = piece.isItPlayer1;
-        board[sizeBoard-1-piece.y][piece.x][2] = piece.directionInitial;
+    public void setPieceOnBoard(Piece piece){ // FAIRLY VERIFIED (not sure at 100%)
+        if (V2){
+            //TODO supp les comments of debugging here :
+/*            System.out.println("BEGIN SET PIECE ON BOARD##################################");
+            System.out.println(boardV2.toString(2));
+            System.out.print("piece.y = ");
+            System.out.println(piece.y);
+            System.out.print("piece.x = ");
+            System.out.println(piece.x);*/
+            boardV2= changeBit(boardV2,(sizeBoard-1-piece.y)*sizeBoard*3+piece.x*3+0,true);;
+            boardV2= changeBit(boardV2,(sizeBoard-1-piece.y)*sizeBoard*3+piece.x*3+1,piece.isItPlayer1);
+            boardV2= changeBit(boardV2,(sizeBoard-1-piece.y)*sizeBoard*3+piece.x*3+2,piece.directionInitial);
+/*            System.out.
+ln(boardV2.toString(2));
+            System.out.println("END SET PIECE ON BOARD##################################");*/
+        }
+        else {
+            board[sizeBoard - 1 - piece.y][piece.x][0] = true;
+            board[sizeBoard - 1 - piece.y][piece.x][1] = piece.isItPlayer1;
+            board[sizeBoard - 1 - piece.y][piece.x][2] = piece.directionInitial;
 
+        }
 
     }
 
@@ -185,28 +243,32 @@ public class Board {
 
 
     public boolean isTherePiece(int x, int y){
-        //printBoardValue(); //TODO to remove
+        if (V2)
+            return getXthBit(boardV2,(sizeBoard-1-y)*sizeBoard*3+x*3+0);
 
-        return (board[sizeBoard-1-y][x][0]);
+        else
+            return (board[sizeBoard-1-y][x][0]);
     }
 
     public Piece whichPieceHere(int x, int y) {
+
 /*        System.out.println("-whichPieceHere---");
         System.out.println("x = " + x);
         System.out.println("y = "+ y);*/
         assert isTherePiece(x, y);
-        boolean isItPlayer1 = board[sizeBoard-1-y][x][1];
-
+        boolean isItPlayer1 = V2? getXthBit(boardV2,(sizeBoard-1-y)*sizeBoard*3+x*3+1) :board[sizeBoard-1-y][x][1];
         if (isItPlayer1){
             assert y != 0;
             assert players[0].pieces[y - 1].x == x; //TODO a supp qd c'est réglé
-        return players[0].pieces[y - 1]; // -1 bcs we search on list with index which starts to 0
+            return players[0].pieces[y - 1]; // -1 bcs we search on list with index which starts to 0
         }
         else {
             assert x != 0;
             assert players[1].pieces[x - 1].y == y; //TODO a supp qd c'est réglé
             return players[1].pieces[x - 1];
         }
+
+
 
 
     }
@@ -228,7 +290,7 @@ public class Board {
         return false;
     }
 
-
+    public BigInteger getBoard(){return boardV2;}
 /*    private void update(){
         //copy from boardModel to board
 
@@ -286,22 +348,23 @@ public class Board {
 
 
         int decalage = 1;
-        for (int y = 0 ; y < board.length; y++){
-            for (int x = 0 ; x < board.length; x++){
+        int boardLength = V2? sizeBoard : board.length;
+        for (int y = 0 ; y < boardLength; y++){
+            for (int x = 0 ; x < boardLength; x++){
                 if (!( (y==0 && x==0) || (y==sizeBoard-1 && x==0) || (y==0 && x== sizeBoard-1) || (y==sizeBoard-1 && x == sizeBoard-1)   )){
-                    if (board[y][x][0]){
+                    if ((V2 && getXthBit(boardV2,(sizeBoard-1-y)*sizeBoard*3+x*3+0)) || (!V2 && board[y][x][0])){
 
-                        if (board[y][x][1]){ // if it's player1
-                            if(board[y][x][2]) // it's initial direction
-                                boardStrings[y+decalage][x+decalage] = " > ";
+                        if ((V2 && getXthBit(boardV2,(sizeBoard-1-y)*sizeBoard*3+x*3+1)) || (!V2 && board[y][x][1])){ // if it's player1
+                            if(((V2 && getXthBit(boardV2,(sizeBoard-1-y)*sizeBoard*3+x*3+2)) || (!V2 && board[y][x][2]))) // it's initial direction
+                                boardStrings[sizeBoard-y][x+decalage] = " > ";
                             else
-                                boardStrings[y+decalage][x+decalage] = " < ";
+                                boardStrings[sizeBoard-y][x+decalage] = " < ";
                         }
                         else{
-                            if(board[y][x][2]) // it's initial direction
-                                boardStrings[y+decalage][x+decalage] = " V ";
+                            if(((V2 && getXthBit(boardV2,(sizeBoard-1-y)*sizeBoard*3+x*3+2)) || (!V2 && board[y][x][2]))) // it's initial direction
+                                boardStrings[sizeBoard-y][x+decalage] = " V ";
                             else
-                                boardStrings[y+decalage][x+decalage] = " Ʌ ";
+                                boardStrings[sizeBoard-y][x+decalage] = " Ʌ ";
                         }
 
 
@@ -315,40 +378,100 @@ public class Board {
         return boardStrings;
     }
 
+    public BigInteger changeBit(BigInteger integer,int index,boolean value){ //VERIFIED
+        integer = value ? integer.setBit(index) : integer.clearBit(index);
+        return integer;
+    }
+    public boolean getXthBit(BigInteger integer, int index){ //VERIFIED
+
+        BigInteger mask = new BigInteger("2").pow(index)/*.divide(new BigInteger("2"))*/;
+        BigInteger resultOperation = integer.and(mask);
+        boolean returnVar = !resultOperation.equals(BigInteger.ZERO);
+        return returnVar;
+    }
+
 
 
     //Debugging function --------------------------------
-    public void printBoardValue(){
-        System.out.println("[");
-        for (boolean[][] i : board){
-            System.out.print("[ ");
+    public void printBoardValue() {
 
-            for (boolean[] j : i){
-                System.out.print("[");
-
-                if(j != null){
-                    for (boolean k : j){
-                        if (k)
-                            System.out.print("True ");
-                        else
-                            System.out.print("-----");
-                        System.out.print(",");
-
-
+        if (V2) {
+            for(int i = 0;i<7;i++){
+                for(int j = 0;j<7;j++){
+                    for(int k = 0;k<3;k++){
+                        board[i][j][k] = getXthBit(boardV2,i*7*3+j*3+k);
                     }
                 }
-                else {
-                    System.out.print("                  ");
-                }
-                System.out.print("] ");
-
 
             }
+            System.out.println(boardV2.toString(2));
+            System.out.println("[");
+            for (boolean[][] i : board) {
+                System.out.print("[ ");
+
+                for (boolean[] j : i) {
+                    System.out.print("[");
+
+                    if (j != null) {
+                        for (boolean k : j) {
+                            if (k)
+                                System.out.print("True ");
+                            else
+                                System.out.print("-----");
+                            System.out.print(",");
+
+
+                        }
+                    } else {
+                        System.out.print("                  ");
+                    }
+                    System.out.print("] ");
+
+
+                }
+                System.out.println("]");
+
+            }
+
             System.out.println("]");
-
         }
+        else {
+            System.out.println("[");
+            for (boolean[][] i : board) {
+                System.out.print("[ ");
 
-        System.out.println("]");
+                for (boolean[] j : i) {
+                    System.out.print("[");
+
+                    if (j != null) {
+                        for (boolean k : j) {
+                            if (k)
+                                System.out.print("True ");
+                            else
+                                System.out.print("-----");
+                            System.out.print(",");
+
+
+                        }
+                    } else {
+                        System.out.print("                  ");
+                    }
+                    System.out.print("] ");
+
+
+                }
+                System.out.println("]");
+
+            }
+
+            System.out.println("]");
+        }
     }
+
+
+    /** FUNCTION TO DEBUG (TO COMMENT OR DELETE AFTER)
+     */
+
+
 
 }

@@ -3,7 +3,8 @@ package game.visual.Player;
 import game.visual.Piece;
 
 public class Player_2 extends Player{
-    public Player_2(){
+    public Player_2(boolean isAI){
+        super(isAI);
         super.isItPlayer1 = false;
         super.playRandom = true;
         pieces = new Piece[]{

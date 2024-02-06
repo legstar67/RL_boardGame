@@ -1,4 +1,5 @@
 package game.visual;
+import java.math.BigInteger;
 import java.util.Random;
 
 import game.visual.Player.Player;
@@ -13,17 +14,38 @@ public class Game {
     Scanner keyboardUser = new Scanner(System.in);
     Board board;
     int nbRound;
+    boolean versionOptimized;
+    boolean trainingPlayer2;
+    boolean trainingPlayer1;
 
-    public Game(int nbRound_){
-        board = new Board();
+    public Game(int nbRound_,boolean versionOptimized_,boolean trainingPlayer1_, boolean trainingPlayer2_){
+        versionOptimized = versionOptimized_;
+        board = new Board(versionOptimized,trainingPlayer1_,trainingPlayer2_);
         finished = false;
         nbRound = nbRound_;
+        trainingPlayer2 = trainingPlayer2_;
+        trainingPlayer1 = trainingPlayer1_;
+
+
     }
 
 
-    public Piece askPlayer(Player player){
+    public int askPlayer(Player player){
         int pieceNb;
-        if (!player.playRandom) {
+        if (trainingPlayer2 && !player.isItPlayer1()){
+            int[] pieceAvailable = new int[5];
+            int max = 0;
+            for (int i = 0; i < 5 ; i++){
+                if (!player.pieces[i].isItAtTheEnd) {
+                    pieceAvailable[max] = i + 1;
+                    max += 1;
+                }
+            }
+            pieceNb = player.getNextAction(board.getBoard(),pieceAvailable,player.epsilon);
+            player.epsilon -= 0.0000001;
+        }
+
+        else if (!player.playRandom) {
             System.out.println();
             if (player.isItPlayer1())
                 System.out.println("Player 1 :");
@@ -60,39 +82,95 @@ public class Game {
         }
 
 
-        return player.pieces[pieceNb-1];
+        return pieceNb;
 
 
-        }
+    }
 
     public void play(boolean player1whoStarts, boolean training){
-        int indexPlayer = player1whoStarts? 0 : 1;
+        int indexPlayer = player1whoStarts? 1 : 2;
 
-        if (training){
-            //TODO
+        int roundPlayed = 0;
+        int gameWonByPlayer1 = 0;
+        int gameWonByPlayer2 = 0;
+        if (training) {
+            while (roundPlayed < nbRound) {
+                board = new Board(versionOptimized,trainingPlayer1,trainingPlayer2);
+                finished = false;
+                board.update();
+                BigInteger newStatePlayer2 = board.getBoard();
+                BigInteger oldStatePlayer2 = new BigInteger("0"); //NOT USEFUL, it's just to put sth into
+                int pieceChoosen;
+                int actionPlayer2 = 0;//NOT USEFUL, it's just to put sth into
+                boolean isItFirstMove = true;
+                while (!finished) {
+                  System.out.println();
+                    System.out.println();
+                    System.out.println();
+                    board.printBoard();
+
+                    pieceChoosen = askPlayer(board.players[indexPlayer - 1]);
+                    board.move(board.players[indexPlayer - 1].pieces[pieceChoosen-1]);
+                    finished = board.isItFinished();
+                    indexPlayer = indexPlayer == 2 ? 1 : 2;
+                    //TODO à supp :
+                    System.out.println("__________________________________________________________________");
+                    System.out.println("le nombre de partie effectue est : ");
+                    System.out.println((gameWonByPlayer1+gameWonByPlayer2));
+                    System.out.println();
+
+
+                    if (indexPlayer == 2) {
+                        oldStatePlayer2 = newStatePlayer2;
+                        actionPlayer2 = pieceChoosen;
+                        isItFirstMove = false;
+                    }
+                    board.update();
+                    if (indexPlayer == 1 && !isItFirstMove) {
+                        newStatePlayer2 = board.getBoard();
+                        board.players[indexPlayer - 1].updateQvalues(oldStatePlayer2,actionPlayer2,0,newStatePlayer2 );
+                    }
+                }
+                if (board.whoWon()) {
+                    gameWonByPlayer1 += 1;
+                    board.players[indexPlayer - 1].updateQvalues(oldStatePlayer2,actionPlayer2,-1000,newStatePlayer2 );
+                }
+                else {
+                    gameWonByPlayer2 += 1;
+                    board.players[indexPlayer - 1].updateQvalues(oldStatePlayer2, actionPlayer2, 1000, newStatePlayer2);
+                }
+                roundPlayed += 1;
+            }
         }
+
         else {
-            int roundPlayed = 0;
-            int gameWonByPlayer1 = 0;
-            int gameWonByPlayer2 = 0;
             while(roundPlayed < nbRound) {
-                board = new Board();
+                board = new Board(versionOptimized, trainingPlayer1, trainingPlayer2);
                 finished = false;
                 while (!finished) {
                     board.update();
-/*                    System.out.println();
-                    System.out.println();
-                    System.out.println();
-                    board.printBoard();*/
-                    board.move(askPlayer(board.players[indexPlayer]));
+
+
+
+                    //TODO supp les Decomment here if need of the board :
+                    //System.out.println();
+                    //System.out.println();
+                    //System.out.println();
+                    //board.printBoard();
+
+
+                    board.move(board.players[indexPlayer - 1].pieces[askPlayer(board.players[indexPlayer - 1]) - 1]);
+                    ;
                     finished = board.isItFinished();
-                    indexPlayer = indexPlayer == 1 ? 0 : 1;
+                    indexPlayer = indexPlayer == 2 ? 1 : 2;
                 }
+
                 if (board.whoWon())
                     gameWonByPlayer1 += 1;
                 else
                     gameWonByPlayer2 += 1;
                 roundPlayed += 1;
+            }
 
             }
             System.out.println("----------END OF THE GAME LOOK THE RESULT------------");
@@ -100,7 +178,8 @@ public class Game {
             System.out.println("Player 2 won " + gameWonByPlayer2 + " rounds.");
 
 
-        }
     }
-
 }
+
+
+

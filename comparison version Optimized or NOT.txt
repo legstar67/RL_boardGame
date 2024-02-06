@@ -1,0 +1,16 @@
+comparison version Optimized or NOT (counting the time to compile):
+100 000 games
+false : 16:63 sec
+true: 9:27 sec
+
+
+1 000 000 games
+false : 2 min 19 sec
+true : 1 min 34 sec
+
+
+
+2ème comparaison (06/02/24) (not counting the time to compile):
+100 000 games:
+optimized : 19.63 sec ; 21.14 sec ; 22.84 sec
+Not optimized : 27.70 sec ; 27.02 sec ; 29.28 sec
