@@ -1,5 +1,6 @@
 package game.visual;
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.Random;
 
 import game.visual.Player.Player;
@@ -33,16 +34,14 @@ public class Game {
     public int askPlayer(Player player){
         int pieceNb;
         if (trainingPlayer2 && !player.isItPlayer1()){
-            int[] pieceAvailable = new int[5];
-            int max = 0;
+            ArrayList<Integer> pieceAvailable = new ArrayList<>();
             for (int i = 0; i < 5 ; i++){
                 if (!player.pieces[i].isItAtTheEnd) {
-                    pieceAvailable[max] = i + 1;
-                    max += 1;
+                    pieceAvailable.add(i + 1);
                 }
             }
             pieceNb = player.getNextAction(board.getBoard(),pieceAvailable,player.epsilon);
-            player.epsilon -= 0.0000001;
+            player.epsilon -= 0.0001;
         }
 
         else if (!player.playRandom) {
@@ -104,20 +103,17 @@ public class Game {
                 int actionPlayer2 = 0;//NOT USEFUL, it's just to put sth into
                 boolean isItFirstMove = true;
                 while (!finished) {
-                  System.out.println();
+                    //TODO à supp :
+/*                  System.out.println();
                     System.out.println();
                     System.out.println();
-                    board.printBoard();
+                    board.printBoard();*/
 
                     pieceChoosen = askPlayer(board.players[indexPlayer - 1]);
                     board.move(board.players[indexPlayer - 1].pieces[pieceChoosen-1]);
                     finished = board.isItFinished();
                     indexPlayer = indexPlayer == 2 ? 1 : 2;
-                    //TODO à supp :
-                    System.out.println("__________________________________________________________________");
-                    System.out.println("le nombre de partie effectue est : ");
-                    System.out.println((gameWonByPlayer1+gameWonByPlayer2));
-                    System.out.println();
+
 
 
                     if (indexPlayer == 2) {
@@ -139,6 +135,13 @@ public class Game {
                     gameWonByPlayer2 += 1;
                     board.players[indexPlayer - 1].updateQvalues(oldStatePlayer2, actionPlayer2, 1000, newStatePlayer2);
                 }
+/*                //TODO à supp :
+                System.out.println("__________________________________________________________________");
+                System.out.println("le nombre de partie effectue est : ");
+                System.out.println((gameWonByPlayer1+gameWonByPlayer2));
+                System.out.println();*/
+
+
                 roundPlayed += 1;
             }
         }
@@ -173,6 +176,14 @@ public class Game {
             }
 
             }
+        //SAVE The data of the AI player:
+        if (board.player1IsAI){
+            System.out.println("---- Start to save the Data of the training in 'qvalues.ser' ----");
+            board.players[0].save();
+            System.out.println("---- End the processing of saving ----");
+        }
+
+
             System.out.println("----------END OF THE GAME LOOK THE RESULT------------");
             System.out.println("Player 1 won " + gameWonByPlayer1 + " rounds.");
             System.out.println("Player 2 won " + gameWonByPlayer2 + " rounds.");

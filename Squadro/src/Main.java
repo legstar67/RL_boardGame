@@ -17,8 +17,8 @@ public class Main {
         bd.update();
         bd.printBoard();*/
 
-        Game game = new Game(1,true,false,false);
-        game.play(true,false);
+        Game game = new Game(10000,true,true,false);
+        game.play(true,true);
 
 /*        int[] tab = new int[]{
                 1,2,3,4,5
