@@ -1,8 +1,8 @@
-package game.visual;
+package game;
 
-import game.visual.Player.Player;
-import game.visual.Player.Player_1;
-import game.visual.Player.Player_2;
+import game.Player.Player;
+import game.Player.Player_1;
+import game.Player.Player_2;
 
 import java.math.BigInteger;
 

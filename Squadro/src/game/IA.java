@@ -1,11 +1,9 @@
-package game.visual;
+package game;
 
 import java.io.*;
 import java.math.BigInteger;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
-import java.util.function.DoubleToIntFunction;
 
 public class IA {
     ArrayList<ArrayList<Object>> qValues = new ArrayList<>();
@@ -18,9 +16,9 @@ public class IA {
     int oldStateIndex;
     protected double epsilon;
 
-    public IA(){
+    public IA(){}
 
-
+    protected void initAI(){
         epsilon = 0.99999;
         // Chargement des Q-values par désérialisation
 
@@ -47,7 +45,6 @@ public class IA {
         }
 
 // Continuez avec la logique de votre programme en utilisant qValues
-
     }
 
     public void createQvalues(){

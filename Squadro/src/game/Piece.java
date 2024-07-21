@@ -1,4 +1,4 @@
-package game.visual;
+package game;
 
 public class Piece {
     int x;

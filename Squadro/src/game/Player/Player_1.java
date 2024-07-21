@@ -1,7 +1,6 @@
-package game.visual.Player;
+package game.Player;
 
-import com.sun.source.tree.WhileLoopTree;
-import game.visual.Piece;
+import game.Piece;
 
 public class Player_1 extends Player{
 

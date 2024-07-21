@@ -1,4 +1,4 @@
-package game.visual;
+package game;
 import java.util.Random;
 
 public class Train {

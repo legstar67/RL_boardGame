@@ -1,11 +1,6 @@
-import game.visual.Board;
-import game.visual.Game;
+import game.Game;
 
-import javax.management.ObjectName;
-import java.io.*;
 import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.Arrays;
 
 // Press Shift twice to open the Search Everywhere dialog and type `show whitespaces`,
 // then press Enter. You can now see whitespace characters in your code.
@@ -16,9 +11,15 @@ public class Main {
         int a = 2;
         bd.update();
         bd.printBoard();*/
+        System.out.println("the program is running");
+        Game game = new Game(
+                1000,
+                true,
+                false,
+                false,
+                false);
 
-        Game game = new Game(10,true,true,false);
-        game.play(true,true);
+        game.play(true,false);
 
 /*        int[] tab = new int[]{
                 1,2,3,4,5

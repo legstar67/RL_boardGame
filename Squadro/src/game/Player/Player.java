@@ -1,14 +1,19 @@
-package game.visual.Player;
+package game.Player;
 
-import game.visual.IA;
-import game.visual.Piece;
+import game.IA;
+import game.Piece;
 
 public abstract class Player extends IA {
     protected boolean isItPlayer1;
     public Piece[] pieces;
     public boolean playRandom;
     public boolean isAI;
-    protected Player(boolean isAI_){isAI = isAI_;}
+    protected Player(boolean isAI_){
+        isAI = isAI_;
+        if(isAI){
+            initAI();
+        }
+    }
 
 
     public boolean isItPlayer1(){ return this.isItPlayer1;}

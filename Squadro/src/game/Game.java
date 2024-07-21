@@ -1,11 +1,10 @@
-package game.visual;
+package game;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Random;
 
-import game.visual.Player.Player;
+import game.Player.Player;
 
-import javax.swing.plaf.synth.SynthOptionPaneUI;
 import java.util.Scanner;
 
 public class Game {
@@ -18,14 +17,16 @@ public class Game {
     boolean versionOptimized;
     boolean trainingPlayer2;
     boolean trainingPlayer1;
+    boolean boardPrinted;
 
-    public Game(int nbRound_,boolean versionOptimized_,boolean trainingPlayer1_, boolean trainingPlayer2_){
+    public Game(int nbRound_,boolean versionOptimized_,boolean trainingPlayer1_, boolean trainingPlayer2_, boolean boardPrinted_){
         versionOptimized = versionOptimized_;
         board = new Board(versionOptimized,trainingPlayer1_,trainingPlayer2_);
         finished = false;
         nbRound = nbRound_;
         trainingPlayer2 = trainingPlayer2_;
         trainingPlayer1 = trainingPlayer1_;
+        boardPrinted = boardPrinted_;
 
 
     }
@@ -103,11 +104,12 @@ public class Game {
                 int actionPlayer2 = 0;//NOT USEFUL, it's just to put sth into
                 boolean isItFirstMove = true;
                 while (!finished) {
-                    //TODO à supp :
-/*                  System.out.println();
-                    System.out.println();
-                    System.out.println();
-                    board.printBoard();*/
+                    if(boardPrinted){
+                        System.out.println();
+                        System.out.println();
+                        System.out.println();
+                        board.printBoard();
+                    }
 
                     pieceChoosen = askPlayer(board.players[indexPlayer - 1]);
                     board.move(board.players[indexPlayer - 1].pieces[pieceChoosen-1]);
@@ -155,11 +157,12 @@ public class Game {
 
 
 
-                    //TODO supp les Decomment here if need of the board :
-                    //System.out.println();
-                    //System.out.println();
-                    //System.out.println();
-                    //board.printBoard();
+                    if(boardPrinted){
+                        System.out.println();
+                        System.out.println();
+                        System.out.println();
+                        board.printBoard();
+                    }
 
 
                     board.move(board.players[indexPlayer - 1].pieces[askPlayer(board.players[indexPlayer - 1]) - 1]);
@@ -187,6 +190,7 @@ public class Game {
             System.out.println("----------END OF THE GAME LOOK THE RESULT------------");
             System.out.println("Player 1 won " + gameWonByPlayer1 + " rounds.");
             System.out.println("Player 2 won " + gameWonByPlayer2 + " rounds.");
+
 
 
     }
