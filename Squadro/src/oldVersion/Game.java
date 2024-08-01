@@ -1,9 +1,9 @@
-package game;
+package oldVersion;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Random;
 
-import game.Player.Player;
+import oldVersion.Player.Player;
 
 import java.util.Scanner;
 

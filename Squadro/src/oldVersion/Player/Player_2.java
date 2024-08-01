@@ -1,6 +1,6 @@
-package game.Player;
+package oldVersion.Player;
 
-import game.Piece;
+import oldVersion.Piece;
 
 public class Player_2 extends Player{
     public Player_2(boolean isAI){

@@ -1,6 +1,6 @@
-package game.Player;
+package oldVersion.Player;
 
-import game.Piece;
+import oldVersion.Piece;
 
 public class Player_1 extends Player{
 

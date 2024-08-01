@@ -1,4 +1,4 @@
-package game;
+package oldVersion;
 
 public class Piece {
     int x;

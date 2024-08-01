@@ -1,7 +1,7 @@
-package game.Player;
+package oldVersion.Player;
 
-import game.IA;
-import game.Piece;
+import oldVersion.IA;
+import oldVersion.Piece;
 
 public abstract class Player extends IA {
     protected boolean isItPlayer1;

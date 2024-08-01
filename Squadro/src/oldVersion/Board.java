@@ -1,8 +1,8 @@
-package game;
+package oldVersion;
 
-import game.Player.Player;
-import game.Player.Player_1;
-import game.Player.Player_2;
+import oldVersion.Player.Player;
+import oldVersion.Player.Player_1;
+import oldVersion.Player.Player_2;
 
 import java.math.BigInteger;
 
@@ -10,7 +10,6 @@ public class Board {
 
     protected boolean[][][] boardModel; /// each case of the board is a tab of 3 boolean (piece ? , player_1 ? , directionInitial ?)
     protected boolean[][][] board;
-    protected BigInteger boardOpti;
     private int nbPiecePerPlayer = 5;
     private int sizeBoard = nbPiecePerPlayer+2;
     private String[][] boardStringsModel;
@@ -66,6 +65,30 @@ public class Board {
                 {"   ", "   ", " 3 ", " 1 ", " 2 ", " 1 ", " 3 ", "   ", "   "}
         };
         boardStrings = new String[boardStringsModel.length][boardStringsModel.length];
+    }
+
+    //for copy a board (V2 only)
+    private Board(BigInteger boardV2, int nbPiecePerPlayer, int sizeBoard, boolean player1IsAI, boolean player2IsAI){
+/*        protected boolean[][][] boardModel; /// each case of the board is a tab of 3 boolean (piece ? , player_1 ? , directionInitial ?)
+        protected boolean[][][] board;
+        protected BigInteger boardOpti;
+        private int nbPiecePerPlayer = 5;
+        private int sizeBoard = nbPiecePerPlayer+2;
+        private String[][] boardStringsModel;
+        private String[][] boardStrings;
+        Player[] players;
+        boolean V2;
+        BigInteger boardV2; //on démarre de en haut à gauche (donc les 3 premiers bits sont la case interdite)
+        boolean player1IsAI;
+        boolean player2IsAI;*/
+
+
+        this.boardV2 = boardV2;
+        this.nbPiecePerPlayer = nbPiecePerPlayer;
+        this.sizeBoard = sizeBoard;
+
+
+
     }
 
 
@@ -469,9 +492,9 @@ ln(boardV2.toString(2));
     }
 
 
-    /** FUNCTION TO DEBUG (TO COMMENT OR DELETE AFTER)
-     */
+    //Function to be used by DL4J
 
 
-
+/*    public Board withNewMovePiece(Piece piece){
+    }*/
 }

@@ -1,4 +1,4 @@
-package game;
+package oldVersion;
 import java.util.Random;
 
 public class Train {

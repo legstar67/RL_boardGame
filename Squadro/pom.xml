@@ -119,6 +119,16 @@ information regarding copyright ownership.
             <artifactId>deeplearning4j-zoo</artifactId>
             <version>${dl4j-master.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.nd4j</groupId>
+            <artifactId>nd4j-native-platform</artifactId>
+            <version>1.0.0-M1.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.deeplearning4j</groupId>
+            <artifactId>rl4j-core</artifactId>
+            <version>1.0.0-M1.1</version>
+        </dependency>
         <!-- ParallelWrapper & ParallelInference live here -->
         <dependency>
             <groupId>org.deeplearning4j</groupId>
@@ -223,8 +233,8 @@ information regarding copyright ownership.
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>${maven-compiler-plugin.version}</version>
                 <configuration>
-                    <source>${java.version}</source>
-                    <target>${java.version}</target>
+                    <source>14</source>
+                    <target>14</target>
                 </configuration>
             </plugin>
 
