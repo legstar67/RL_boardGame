@@ -19,18 +19,20 @@ import java.util.Random;
 public class DQLAgent {
 
     // Hyperparameters
-    private static final double LEARNING_RATE = 0.01;//0.01
-    private static final double DISCOUNT_FACTOR = 0.99;//0.99
-    private static double EXPLORATION_RATE = 1.0;//1.0
-    private static final double EXPLORATION_DECAY = 0.995;//0.995
-    private static final double MIN_EXPLORATION_RATE = 0.01;//0.01
+    public static final double LEARNING_RATE = 0.01;//0.01
+    public static final double DISCOUNT_FACTOR = 0.99;//0.99
+    public static double EXPLORATION_RATE = 1.0;//1.0
+    public static final double EXPLORATION_DECAY = 0.995;//0.995
+    public static final double MIN_EXPLORATION_RATE = 0.01;//0.01
+    public static final int nbNeuronsLayer1 = 24;//24
+    public static final int nbNeuronsLayer2 = 24;//24
 
     // Environment variables
     static final int STATE_SIZE = 40; // Number of bits in state representation
     private static final int ACTION_SIZE = 5; // Number of possible actions
 
     // Random number generator
-    private static final Random random = new Random();
+    private static final Random random = new Random(123);
 
     // Q-network
     private MultiLayerNetwork model;
@@ -48,15 +50,15 @@ public class DQLAgent {
                 .weightInit(WeightInit.XAVIER)
                 .updater(new Nesterovs(LEARNING_RATE, 0.9))
                 .list()
-                .layer(new DenseLayer.Builder().nIn(STATE_SIZE).nOut(24)
+                .layer(new DenseLayer.Builder().nIn(STATE_SIZE).nOut(nbNeuronsLayer1)
                         .activation(Activation.RELU)
                         .build())
-                .layer(new DenseLayer.Builder().nIn(24).nOut(24)
+                .layer(new DenseLayer.Builder().nIn(nbNeuronsLayer1).nOut(nbNeuronsLayer2)
                         .activation(Activation.RELU)
                         .build())
                 .layer(new OutputLayer.Builder(LossFunctions.LossFunction.MSE)
                         .activation(Activation.IDENTITY)
-                        .nIn(24).nOut(ACTION_SIZE).build())
+                        .nIn(nbNeuronsLayer2).nOut(ACTION_SIZE).build())
                 .build();
 
         MultiLayerNetwork model = new MultiLayerNetwork(config);

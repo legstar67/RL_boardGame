@@ -13,9 +13,11 @@ import static game.RL.DQLAgent.STATE_SIZE;
 
 public class TrainAgent {
 
-    private static final int NUM_EPISODES = 100; //1000
-    private static final int MAX_STEPS_PER_EPISODE = 10; //100
-    private static final String MODEL_PATH = "model.zip";
+    private static final int NUM_EPISODES = 45_000; //1000
+    private static final int MAX_STEPS_PER_EPISODE = 100; //100
+    private static final double negativeRewardForLose = -1;//-1
+    private static final double negativeRewardForCrashing = -1  ;//-1
+    private static final String MODEL_PATH = "list_models/modelV8.zip";
 
     public static void main(String[] args) {
         DQLAgent agent = new DQLAgent();
@@ -36,14 +38,14 @@ public class TrainAgent {
                 state = nextState;
                 step++;
             }
-            if (episode % 100 == 0)
+            if (episode % 1000 == 0)
                 System.out.println("Episode " + episode + " finished after " + step + " steps.");
         }
 
         saveModel(agent);
 
         //Evaluation
-        int nbOfGames = 100;
+        int nbOfGames = 100_000;
         int nbRoundMaxPerGame = 500;
         long board = BoardV3.INIT_BOARD;
         //int gamePlayed = 0;
@@ -100,8 +102,27 @@ public class TrainAgent {
         System.out.println("");
         System.out.println("------     VersionX     ------");
         System.out.println("Game finished");
+        System.out.println("");
+
+        System.out.println("Parameters of the training : ");
         System.out.println("nbEpisodes: " + NUM_EPISODES);
         System.out.println("maxStepsPerEpisode: " + MAX_STEPS_PER_EPISODE);
+        System.out.println("negativeRewardForLose: " + negativeRewardForLose);
+        System.out.println("negativeRewardForCrashing: " + negativeRewardForCrashing);
+        System.out.println("");
+
+        System.out.println("parameter of the model : ");
+        System.out.println("learning rate: " + DQLAgent.LEARNING_RATE);
+        System.out.println("discount factor: " + DQLAgent.DISCOUNT_FACTOR);
+        System.out.println("exploration rate: " + DQLAgent.EXPLORATION_RATE);
+        System.out.println("exploration decay: " + DQLAgent.EXPLORATION_DECAY);
+        System.out.println("min exploration rate: " + DQLAgent.MIN_EXPLORATION_RATE);
+        System.out.println("Nunber of layers: " + 2);
+        System.out.println("nbNeuronsLayer1: " + DQLAgent.nbNeuronsLayer1);
+        System.out.println("nbNeuronsLayer2: " + DQLAgent.nbNeuronsLayer2);
+        System.out.println("");
+
+        System.out.println("result of the evaluation : ");
         System.out.println("nbOfGames: " + nbOfGames);
         System.out.println("nbRoundMaxPerGame: " + nbRoundMaxPerGame);
         System.out.println("Player 1  (AI) won " + winPlayer1 + " times");
@@ -131,10 +152,12 @@ public class TrainAgent {
         if (BoardV3.isGameFinished(state) && BoardV3.whoWin(state) == 1 ) {
             return 1;
         }
-        else if (state == Long.MAX_VALUE || BoardV3.isGameFinished(state) && BoardV3.whoWin(state) == 2) {
-            return -1;
-        }
-        else {
+        else if (state == Long.MAX_VALUE) {
+            return negativeRewardForCrashing;
+        } else if (BoardV3.isGameFinished(state) && BoardV3.whoWin(state) == 2) {
+            return negativeRewardForLose;
+
+        } else {
             return 0;
         }
     }
