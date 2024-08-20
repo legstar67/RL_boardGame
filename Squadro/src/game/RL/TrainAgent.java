@@ -1,5 +1,6 @@
 package game.RL;
 
+import game.PlayGame;
 import game.BoardV3;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.factory.Nd4j;
@@ -13,12 +14,13 @@ import static game.RL.DQLAgent.STATE_SIZE;
 
 public class TrainAgent {
 
-    private static final int NUM_EPISODES = 45_000; //1000
-    private static final int MAX_STEPS_PER_EPISODE = 100; //100
-    private static final double negativeRewardForLose = -1;//-1
-    private static final double negativeRewardForCrashing = -1  ;//-1
-    private static final String MODEL_PATH = "list_models/modelV8.zip";
+    public static final int NUM_EPISODES = 45_000; //1000
+    public static final int MAX_STEPS_PER_EPISODE = 100; //100
+    public static final double negativeRewardForLose = -1;//-1
+    public static final double negativeRewardForCrashing = -1  ;//-1
+    //public static final String MODEL_PATH = "list_models/modelV8.zip";
 
+/*
     public static void main(String[] args) {
         DQLAgent agent = new DQLAgent();
 
@@ -30,7 +32,7 @@ public class TrainAgent {
             while (!done && step < MAX_STEPS_PER_EPISODE) {
                 int action = agent.chooseAction(state);
                 long nextState = performAction(state, action);
-                double reward = getReward(nextState);
+                double reward = getReward(nextState,1,negativeRewardForLose,negativeRewardForCrashing);
                 done = isDone(nextState);
 
                 agent.train(state, action, reward, nextState, done);
@@ -42,7 +44,7 @@ public class TrainAgent {
                 System.out.println("Episode " + episode + " finished after " + step + " steps.");
         }
 
-        saveModel(agent);
+        saveModel(agent, MODEL_PATH);
 
         //Evaluation
         int nbOfGames = 100_000;
@@ -64,12 +66,15 @@ public class TrainAgent {
                 int playerChoice = -1;
                 if (player == 1) {
                     //TODO optimize this code :
+*/
 /*                    INDArray stateVector = Nd4j.create(1, STATE_SIZE);
                     for (int j = 0; j < STATE_SIZE; j++) {
                         stateVector.putScalar(j, (board >> j) & 1);
                     }
                     INDArray qValues = agent.getModel().output(stateVector);
                     playerChoice = Nd4j.argMax(qValues, 1).getInt(0);*/
+    /*
+
 
                     //new code optimized :
                     long[] boardArray = new long[STATE_SIZE];
@@ -111,8 +116,9 @@ public class TrainAgent {
         System.out.println("negativeRewardForCrashing: " + negativeRewardForCrashing);
         System.out.println("");
 
-        System.out.println("parameter of the model : ");
-        System.out.println("learning rate: " + DQLAgent.LEARNING_RATE);
+*/
+/*        System.out.println("parameter of the model : ");
+        System.out.println("learning rate: " + agent.LEARNING_RATE);
         System.out.println("discount factor: " + DQLAgent.DISCOUNT_FACTOR);
         System.out.println("exploration rate: " + DQLAgent.EXPLORATION_RATE);
         System.out.println("exploration decay: " + DQLAgent.EXPLORATION_DECAY);
@@ -120,7 +126,8 @@ public class TrainAgent {
         System.out.println("Nunber of layers: " + 2);
         System.out.println("nbNeuronsLayer1: " + DQLAgent.nbNeuronsLayer1);
         System.out.println("nbNeuronsLayer2: " + DQLAgent.nbNeuronsLayer2);
-        System.out.println("");
+        System.out.println("");*//*
+
 
         System.out.println("result of the evaluation : ");
         System.out.println("nbOfGames: " + nbOfGames);
@@ -131,14 +138,16 @@ public class TrainAgent {
         System.out.println("Game overtime " + gameOvertime + " times");
     }
 
+*/
 
 
-    private static long initialState() {
+
+    public static long initialState() {
         // Implementation to initialize the game state
         return BoardV3.INIT_BOARD;
     }
 
-    private static long performAction(long state, int action) {
+    public static long performAction(long state, int action) {
         // Implementation to perform the given action on the state and return the new
         long newState = state;
         newState = BoardV3.withPiecePlayed(newState, action); //play the action of the agent
@@ -147,10 +156,10 @@ public class TrainAgent {
         return newState;
     }
 
-    private static double getReward(long state) {
+    public static double getReward(long state, double positiveReward, double negativeRewardForLose, double negativeRewardForCrashing) {
         // Implementation to calculate the reward for the given state
         if (BoardV3.isGameFinished(state) && BoardV3.whoWin(state) == 1 ) {
-            return 1;
+            return positiveReward;
         }
         else if (state == Long.MAX_VALUE) {
             return negativeRewardForCrashing;
@@ -162,7 +171,7 @@ public class TrainAgent {
         }
     }
 
-    private static boolean isDone(long state) {
+    public static boolean isDone(long state) {
         // Implementation to check if the game is finished
         return state == Long.MAX_VALUE || BoardV3.isGameFinished(state);
     }
@@ -171,7 +180,7 @@ public class TrainAgent {
 
 
 
-    private static int chosePieceRandom(int player, boolean[] piecesPlayable) {
+    public static int chosePieceRandom(int player, boolean[] piecesPlayable) {
         double a;
         int piece = -1;
 
@@ -192,9 +201,9 @@ public class TrainAgent {
         return player == 1 ? piece : piece + 5;
     }
 
-    private static void saveModel(DQLAgent agent) {
+    public static void saveModel(DQLAgent agent, String modelPath) {
         try {
-            File modelFile = new File(MODEL_PATH);
+            File modelFile = new File(modelPath);
 
 /*            // Assure-toi que le dossier parent existe, sinon crée-le
             if (!modelFile.getParentFile().exists()) {
@@ -218,5 +227,19 @@ public class TrainAgent {
             System.out.println("Failed to save the model.");
         }
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 }

@@ -9,8 +9,8 @@ public class BoardV3 {
     private long board; //type long bcs it's easier to manipulate
     private static final int sizeBitsBoard = 40;
     private static final int sizeBitsPiece = 4;
-    private static final int nbPiecePerPlayer = 5;
-    private static final int nbOfPiece = 2 * nbPiecePerPlayer;
+    public static final int nbPiecePerPlayer = 5;
+    public static final int nbOfPiece = 2 * nbPiecePerPlayer;
     private static final int maxDistancePiece = nbOfPiece + 2;
     private static final int nbPieceFinishedToWin = 4;
     //number of case the piece walks, order : Player1 bottom to top then Player2 left to right
@@ -21,15 +21,15 @@ public class BoardV3 {
             {3,1,2,1,3,
             1,3,2,3,1};
     private static final String[][] boardStringsModel = new String[][]{
-        {"   ", "   ", " 1 ", " 3 ", " 2 ", " 3 ", " 1 ", "   ", "   "},
-        {"   ", "   ", " . ", " . ", " . ", " . ", " . ", "   ", "   "},
-        {" 1 ", " . ", " . ", " . ", " . ", " . ", " . ", " . ", " 3 "},
-        {" 3 ", " . ", " . ", " . ", " . ", " . ", " . ", " . ", " 1 "},
-        {" 2 ", " . ", " . ", " . ", " . ", " . ", " . ", " . ", " 2 "},
-        {" 3 ", " . ", " . ", " . ", " . ", " . ", " . ", " . ", " 1 "},
-        {" 1 ", " . ", " . ", " . ", " . ", " . ", " . ", " . ", " 3 "},
-        {"   ", "   ", " . ", " . ", " . ", " . ", " . ", "   ", "   "},
-        {"   ", "   ", " 3 ", " 1 ", " 2 ", " 1 ", " 3 ", "   ", "   "}
+        {"       ", "   ", " 1 ", " 3 ", " 2 ", " 3 ", " 1 ", "   ", "       "},
+        {"       ", "   ", " . ", " . ", " . ", " . ", " . ", "   ", "       "},
+        {" 4 (1) ", " . ", " . ", " . ", " . ", " . ", " . ", " . ", " (3) 4 "},
+        {" 3 (3) ", " . ", " . ", " . ", " . ", " . ", " . ", " . ", " (1) 3 "},
+        {" 2 (2) ", " . ", " . ", " . ", " . ", " . ", " . ", " . ", " (2) 2 "},
+        {" 1 (3) ", " . ", " . ", " . ", " . ", " . ", " . ", " . ", " (1) 1 "},
+        {" 0 (1) ", " . ", " . ", " . ", " . ", " . ", " . ", " . ", " (3) 0 "},
+        {"       ", "   ", " . ", " . ", " . ", " . ", " . ", "   ", "       "},
+        {"       ", "   ", " 3 ", " 1 ", " 2 ", " 1 ", " 3 ", "   ", "       "}
     };
     public static long INIT_BOARD = 0b0000_0000_0000_0000_0000_0000_0000_0000_0000_0000L;
 

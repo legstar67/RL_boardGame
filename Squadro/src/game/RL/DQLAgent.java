@@ -19,16 +19,16 @@ import java.util.Random;
 public class DQLAgent {
 
     // Hyperparameters
-    public static final double LEARNING_RATE = 0.01;//0.01
-    public static final double DISCOUNT_FACTOR = 0.99;//0.99
-    public static double EXPLORATION_RATE = 1.0;//1.0
-    public static final double EXPLORATION_DECAY = 0.995;//0.995
-    public static final double MIN_EXPLORATION_RATE = 0.01;//0.01
-    public static final int nbNeuronsLayer1 = 24;//24
-    public static final int nbNeuronsLayer2 = 24;//24
+    final double learningRate;//0.01
+    final double discountFactor ;//0.99
+    double explorationRate;//1.0
+    final double explorationDecay;//0.995
+    final double minExplorationRate;//0.01
+    final int nbLayer;//2
+    final int[] nbNeuronsPerLayer;//{24, 24}
 
     // Environment variables
-    static final int STATE_SIZE = 40; // Number of bits in state representation
+    public static final int STATE_SIZE = 40; // Number of bits in state representation
     private static final int ACTION_SIZE = 5; // Number of possible actions
 
     // Random number generator
@@ -37,28 +37,64 @@ public class DQLAgent {
     // Q-network
     private MultiLayerNetwork model;
 
-    public DQLAgent() {
+    public DQLAgent(
+            double learningRate,
+            double discountFactor,
+            double initialExplorationRate,
+            double explorationDecay,
+            double minExplorationRate,
+            int nbLayer,
+            int[] nbNeuronsPerLayer) {
         model = createModel();
+        this.learningRate = learningRate;
+        this.explorationRate = initialExplorationRate;
+        this.discountFactor = discountFactor;
+        this.explorationDecay = explorationDecay;
+        this.minExplorationRate = minExplorationRate;
+        this.nbLayer = nbLayer;
+        this.nbNeuronsPerLayer = nbNeuronsPerLayer;
+
+
+
     }
-    public DQLAgent(String modelPath) throws IOException {
+    public DQLAgent(
+            String modelPath,
+            double learningRate,
+            double discountFactor,
+            double initialExplorationRate,
+            double explorationDecay,
+            double minExplorationRate,
+            int nbLayer,
+            int[] nbNeuronsPerLayer
+    ) throws IOException {
         model = ModelSerializer.restoreMultiLayerNetwork(modelPath);
+
+        this.learningRate = learningRate;
+        this.explorationRate = initialExplorationRate;
+        this.discountFactor = discountFactor;
+        this.explorationDecay = explorationDecay;
+        this.minExplorationRate = minExplorationRate;
+        this.nbLayer = nbLayer;
+        this.nbNeuronsPerLayer = nbNeuronsPerLayer;
     }
 
     private MultiLayerNetwork createModel() {
-        MultiLayerConfiguration config = new NeuralNetConfiguration.Builder()
+        NeuralNetConfiguration. ListBuilder configBuilder = new NeuralNetConfiguration.Builder()
                 .seed(123)
                 .weightInit(WeightInit.XAVIER)
-                .updater(new Nesterovs(LEARNING_RATE, 0.9))
+                .updater(new Nesterovs(learningRate, 0.9))
                 .list()
-                .layer(new DenseLayer.Builder().nIn(STATE_SIZE).nOut(nbNeuronsLayer1)
+                .layer(new DenseLayer.Builder().nIn(STATE_SIZE).nOut(nbNeuronsPerLayer[0])
                         .activation(Activation.RELU)
-                        .build())
-                .layer(new DenseLayer.Builder().nIn(nbNeuronsLayer1).nOut(nbNeuronsLayer2)
-                        .activation(Activation.RELU)
-                        .build())
-                .layer(new OutputLayer.Builder(LossFunctions.LossFunction.MSE)
+                        .build());
+                for (int i = 0; i < nbLayer-1; i++) {
+                        configBuilder = configBuilder.layer(new DenseLayer.Builder().nIn(nbNeuronsPerLayer[i]).nOut(nbNeuronsPerLayer[i+1])
+                            .activation(Activation.RELU)
+                            .build());
+                }
+                MultiLayerConfiguration config = configBuilder.layer(new OutputLayer.Builder(LossFunctions.LossFunction.MSE)
                         .activation(Activation.IDENTITY)
-                        .nIn(nbNeuronsLayer2).nOut(ACTION_SIZE).build())
+                        .nIn(nbNeuronsPerLayer[nbNeuronsPerLayer.length-1]).nOut(ACTION_SIZE).build())
                 .build();
 
         MultiLayerNetwork model = new MultiLayerNetwork(config);
@@ -67,7 +103,7 @@ public class DQLAgent {
     }
 
     public int chooseAction(long state) {
-        if (random.nextDouble() < EXPLORATION_RATE) {
+        if (random.nextDouble() < explorationRate) {
             return random.nextInt(ACTION_SIZE);
         } else {
             INDArray stateVector = Nd4j.create(1, STATE_SIZE);
@@ -94,14 +130,14 @@ public class DQLAgent {
         INDArray nextQValues = model.output(nextStateVector);
 
         double maxNextQ = Nd4j.max(nextQValues).getDouble(0);
-        double updatedQ = reward + (done ? 0 : DISCOUNT_FACTOR * maxNextQ);
+        double updatedQ = reward + (done ? 0 : discountFactor * maxNextQ);
 
         target.putScalar(action, updatedQ);
 
         model.fit(new DataSet(stateVector, target));
 
-        if (EXPLORATION_RATE > MIN_EXPLORATION_RATE) {
-            EXPLORATION_RATE *= EXPLORATION_DECAY;
+        if (explorationRate > minExplorationRate) {
+            explorationRate *= explorationDecay;
         }
     }
     public MultiLayerNetwork getModel() {
