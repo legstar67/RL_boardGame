@@ -18,6 +18,7 @@ import java.util.Random;
 
 public class DQLAgent {
 
+
     // Hyperparameters
     final double learningRate;//0.01
     final double discountFactor ;//0.99
@@ -45,7 +46,6 @@ public class DQLAgent {
             double minExplorationRate,
             int nbLayer,
             int[] nbNeuronsPerLayer) {
-        model = createModel();
         this.learningRate = learningRate;
         this.explorationRate = initialExplorationRate;
         this.discountFactor = discountFactor;
@@ -53,6 +53,7 @@ public class DQLAgent {
         this.minExplorationRate = minExplorationRate;
         this.nbLayer = nbLayer;
         this.nbNeuronsPerLayer = nbNeuronsPerLayer;
+        model = createModel();
 
 
 
@@ -143,4 +144,32 @@ public class DQLAgent {
     public MultiLayerNetwork getModel() {
         return model;
     }
+    public double getLearningRate() {
+        return learningRate;
+    }
+
+    public double getDiscountFactor() {
+        return discountFactor;
+    }
+
+    public double getExplorationRate() {
+        return explorationRate;
+    }
+
+    public double getExplorationDecay() {
+        return explorationDecay;
+    }
+
+    public double getMinExplorationRate() {
+        return minExplorationRate;
+    }
+
+    public int getNbLayer() {
+        return nbLayer;
+    }
+
+    public int[] getNbNeuronsPerLayer() {
+        return nbNeuronsPerLayer;
+    }
+
 }

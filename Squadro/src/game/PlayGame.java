@@ -8,15 +8,21 @@ import org.nd4j.linalg.factory.Nd4j;
 import java.util.Scanner;
 
 import static game.RL.DQLAgent.STATE_SIZE;
-import static game.RL.TrainAgent.negativeRewardForLose;
-import static game.RL.TrainAgent.negativeRewardForCrashing;
 import static game.RL.TrainAgent.*;
 
 public class PlayGame {
+//TODO mettre en place un message pour quand l'ia fait un move non autorisé
 
-
-
-
+    /**
+     * Train the agentAI
+     * @param agent the agent to train
+     * @param num_episode number of episode (game) to play
+     * @param max_step_per_episode maximum number of round per game
+     * @param positiveReward reward for winning
+     * @param negativeRewardForLose reward for losing
+     * @param negativeRewardForCrashing reward for crashing (make a move not allowed)
+     * @param modelPath path to save the model
+     */
     public static void trainPlayerAI(
             DQLAgent agent,
             int num_episode,
@@ -42,7 +48,7 @@ public class PlayGame {
                 state = nextState;
                 step++;
             }
-            if (episode % 1000 == 0)
+            if (episode % ( num_episode >= 1000 ? num_episode/1000 : 1) == 0)
                 System.out.println("Episode " + episode + " finished after " + step + " steps.");
         }
 
@@ -50,7 +56,19 @@ public class PlayGame {
 
     }
 
-
+    /**
+     * Play a game between two players
+     * @param player1 kind of player 1
+     * @param player2 kind of player 2
+     * @param nbGame number of game to play
+     * @param maxStepPerGame maximum number of round per game
+     * @param agent1 agent of player 1 (if player 1 is AI)
+     * @param agent2 agent of player 2 (if player 2 is AI)
+     * @param printProbaAI print the probability of the output of the model //TODO to implement
+     * @param printBoard print the board at each round
+     * @param trainingModel1 train the model of player 1
+     * @param trainingModel2 train the model of player 2
+     */
     public static void playPlayer1vsPlayer2(pPlayer player1,
                                             pPlayer player2,
                                             int nbGame,
@@ -58,7 +76,9 @@ public class PlayGame {
                                             DQLAgent agent1,
                                             DQLAgent agent2,
                                             boolean printProbaAI,
-                                            boolean printBoard){
+                                            boolean printBoard,
+                                            boolean trainingModel1,
+                                            boolean trainingModel2){
         //Evaluation
         int nbOfGames = nbGame;
         int nbRoundMaxPerGame = maxStepPerGame;
@@ -99,51 +119,48 @@ public class PlayGame {
             if((board != Long.MAX_VALUE) && countRoundPlayed < nbRoundMaxPerGame) {
                 int bin = player == 1 ? winPlayer2++ : winPlayer1++;
             }else if(board == Long.MAX_VALUE){
-                System.out.println("the game n°"+ i+" : Move Not Allowed from Player "+(player == 1 ? 2 : 1)+" !");
+                System.out.println("Game n°"+ i+" : Move Not Allowed from Player "+(player == 1 ? 2 : 1)+" !   --> rate of fail :" + ( (gameFailed/(i + 1)) * 100) + "%" );
+                System.out.println("gameFailed = "+gameFailed);
                 gameFailed++;
             }
             else {
-                System.out.println("the game n°"+ i+" : Overtime !");
+                System.out.println("Game n°"+ i+" : Overtime !");
                 gameOvertime++;
             }
         }
 
 
-        System.out.println("------     VersionX     ------");
-        System.out.println("Game finished");
-        System.out.println("");
+        System.out.println("----------     Game finished     ----------");
+        System.out.println();
 
-        System.out.println("result of the evaluation : ");
+        System.out.println("--  result of the evaluation  --");
         System.out.println("nbOfGames: " + nbOfGames);
         System.out.println("nbRoundMaxPerGame: " + nbRoundMaxPerGame);
-/*        System.out.println("Player 1  ("+
-                player1 == pPlayer.AI ? "AI": player1 == pPlayer.RANDOM ? "RANDOM":"HUMAN"
-                +") won " + winPlayer1 + " times");*/
-        System.out.println("Player 2 (Rdm) won " + winPlayer2 + " times");
+        System.out.println("Player 1  ("+toStringKindPlayer(player1)+") won " + winPlayer1 + " times");
+        System.out.println("Player 2 ("+toStringKindPlayer(player2)+") won " + winPlayer2 + " times");
         System.out.println("Game failed " + gameFailed + " times");
         System.out.println("Game overtime " + gameOvertime + " times");
+        System.out.println();
+        System.out.println();
+        System.out.println();
+        System.out.println();
 
 
 
-        System.out.println("Parameters of the training : ");
-        System.out.println("nbEpisodes: " + NUM_EPISODES);
-        System.out.println("maxStepsPerEpisode: " + MAX_STEPS_PER_EPISODE);
-        System.out.println("negativeRewardForLose: " + negativeRewardForLose);
-        System.out.println("negativeRewardForCrashing: " + negativeRewardForCrashing);
-        System.out.println("");
 
-/*
-        System.out.println("parameter of the model : ");
-        System.out.println("learning rate: " + DQLAgent.LEARNING_RATE);
-        System.out.println("discount factor: " + DQLAgent.DISCOUNT_FACTOR);//TODO changer les constantes pour agent 1 et 2
-        System.out.println("exploration rate: " + DQLAgent.EXPLORATION_RATE);
-        System.out.println("exploration decay: " + DQLAgent.EXPLORATION_DECAY);
-        System.out.println("min exploration rate: " + DQLAgent.MIN_EXPLORATION_RATE);
-        System.out.println("Nunber of layers: " + 2);
-        System.out.println("nbNeuronsLayer1: " + DQLAgent.nbNeuronsLayer1);
-        System.out.println("nbNeuronsLayer2: " + DQLAgent.nbNeuronsLayer2);
-        System.out.println("");
-*/
+
+        if(player1 == pPlayer.AI)
+            printAgentParameters(agent1,1);
+        if(player2 == pPlayer.AI)
+            printAgentParameters(agent2,2);
+
+        System.out.println();
+
+        if(player1 == pPlayer.AI && trainingModel1)
+            printTrainingAgentParameters(1, nbOfGames, nbRoundMaxPerGame, 1, -1, -1);
+        if (player2 == pPlayer.AI && trainingModel2)
+            printTrainingAgentParameters(2, nbOfGames, nbRoundMaxPerGame, 1, -1, -1);
+
 
 
 
@@ -159,7 +176,7 @@ public class PlayGame {
                 Scanner scanner = new java.util.Scanner(System.in);
                 boolean[] piecesPlayable = BoardV3.getPiecesPlayable(board);
                 do {
-                    System.out.print("Choose a piece to play (");
+                    System.out.print("Player " + player + " : Choose a piece to play (");
                     StringBuilder pieces = new StringBuilder();
 
                     for (int i = 0; i < BoardV3.nbOfPiece; i++) {
@@ -175,7 +192,7 @@ public class PlayGame {
                     pieces.deleteCharAt(pieces.length() - 1);
                     System.out.print(pieces.toString() + ") : ");
                     playerChoice = scanner.nextInt();
-                } while (!piecesPlayable[playerChoice]);
+                } while (!piecesPlayable[playerChoice] && ( (player == 2 && playerChoice >= BoardV3.nbPiecePerPlayer) || (player == 1 && playerChoice < BoardV3.nbPiecePerPlayer) ));
                 return playerChoice;
             }
 
@@ -206,8 +223,32 @@ public class PlayGame {
 
     }
 
-    private static void printParameter(DQLAgent agent){
+    private static void printAgentParameters(DQLAgent agent, int player){
+        System.out.println();
+        System.out.println("--  parameter of the model of Player "+player+"  --");
+        System.out.println("learning rate: " + agent.getLearningRate());
+        System.out.println("discount factor: " + agent.getDiscountFactor());
+        System.out.println("exploration rate: " + agent.getExplorationRate());
+        System.out.println("exploration decay: " + agent.getExplorationDecay());
+        System.out.println("min exploration rate: " + agent.getMinExplorationRate());
+        System.out.println("Nunber of layers: " + agent.getNbLayer());
+        for (int i = 0; i < agent.getNbLayer(); i++) {
+            System.out.println("nbNeuronsLayer"+(i+1)+": " + agent.getNbNeuronsPerLayer()[i]);
+        }
 
+    }
+
+    private static void printTrainingAgentParameters(int player, int num_episode, int max_step_per_episode, double positiveReward, double negativeRewardForLose, double negativeRewardForCrashing){
+        System.out.println();
+        System.out.println("--  Parameters of the training of the " + "Player " + player + "  --");
+        System.out.println("nbEpisodes: " + num_episode);
+        System.out.println("maxStepsPerEpisode: " + max_step_per_episode);
+        System.out.println("positiveReward: " + positiveReward);
+        System.out.println("negativeRewardForLose: " + negativeRewardForLose);
+        System.out.println("negativeRewardForCrashing: " + negativeRewardForCrashing);
+    }
+    private static String toStringKindPlayer(pPlayer playerType){
+        return (playerType == pPlayer.AI ? "AI": playerType == pPlayer.RANDOM ? "RANDOM":"HUMAN");
     }
 
     public enum pPlayer{

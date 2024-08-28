@@ -4,20 +4,39 @@ import game.RL.TrainAgent;
 
 import java.io.IOException;
 
-// Press Shift twice to open the Search Everywhere dialog and type `show whitespaces`,
-// then press Enter. You can now see whitespace characters in your code.
+//-------------------       How the program works ?       -------------------
+// you can modify the variable in the zone signalised
+//
+// It's board game is played with 2 Players
+// --> you can choose the type of both player : HUMAN , RANDOM and AI (eg : PlayGame.pPlayer.RANDOM)
+// if you choose AI, you can either (by changing value of LOAD_MODEL_PLAYER and TRAINING_MODEL)
+//      -load an existing model and use it (true and false)
+//      -load an existing model and try to improve it by training it more and then use it (true and true)
+//      -create a model (it destroys the existing at the path ! ), train it and then use it (false and true)
+//
+// For
+
+
+
+
+//-------------------       RULES OF THE GAME       -------------------
+//TODO
+
+
+
+
 public class Main {
     public static void main(String[] args) throws InterruptedException, IOException {
 
-        //-------------------       Parameters of the program       -------------------
+        //-------------------       Parameters of the program (beginning)       -------------------
 
         //Player1
-        final PlayGame.pPlayer playerType1 = PlayGame.pPlayer.RANDOM;
+        final PlayGame.pPlayer playerType1 = PlayGame.pPlayer.AI;
         //if player1 is AI, the following parameter is important
             final boolean LOAD_MODEL_PLAYER_1 = true;
-            final String MODEL_PATH_PLAYER_1 = "list_models/Player1_modelTest.zip";
+            final String MODEL_PATH_PLAYER_1 = "list_models/Player1_modelV3.zip";
 
-            // Hyperparameters (not saved in the file)
+            // Hyperparameters (not saved in the file) //TODO only for training right ?
             final double learningRate1 = 0.01;
             final double discountFactor1 = 0.99;
             double explorationRate1 = 1.0;
@@ -28,7 +47,7 @@ public class Main {
                 final int[] nbNeuronsPerLayer1 = {24, 24};
 
             //Training parameters
-            final boolean TRAINING_MODEL_1 = false; //TODO not implemented
+            final boolean TRAINING_MODEL_1 = false;
             final int NUM_EPISODE_1 = 1000; //Total number of games played by the AI to train
             final int MAX_STEPS_PER_EPISODE_1 = 100; //Maximum number of rounds per game
             final double positiveReward_1 = 1;
@@ -43,7 +62,7 @@ public class Main {
         final PlayGame.pPlayer playerType2 = PlayGame.pPlayer.RANDOM;
         //if player1 is AI, the following parameter is important
             final boolean LOAD_MODEL_PLAYER_2 = true;
-            final String MODEL_PATH_PLAYER_2 = "list_models/Player1_modelTest.zip";
+            final String MODEL_PATH_PLAYER_2 = "list_models/Player1_modelV1.zip";
 
             // Hyperparameters (not saved in the file)
             final double learningRate2 = 0.01;
@@ -54,29 +73,27 @@ public class Main {
                 //Only for the creation of the model:
                 final int nbLayer2 = 2;
                 final int[] nbNeuronsPerLayer2 = {24, 24};
-
-
             //Training parameters
+            final boolean TRAINING_MODEL_2 = false;
             final int NUM_EPISODE_2 = 1000; //Total number of games played by the AI to train
             final int MAX_STEPS_PER_EPISODE_2 = 100; //Maximum number of rounds per game
             final double positiveReward_2 = 1;
             final double negativeRewardForLose_2 = -1;//-1
             final double negativeRewardForCrashing_2 = -1;//-1
-            final boolean TRAINING_MODEL_2 = false; //TODO not implemented
 
 
 
 
 
         //Game
-        final int nbOfGames = 1_000;
+        final int nbOfGames = 1_0000;
         final int nbRoundMaxPerGame = 500;
         final boolean printGame = false; //
         final boolean printProbaOfOutputModel = false; //show probability for each action used by the agent to choose the best
 
 
 
-        //-------------------       End of parameters of the program       -------------------
+        //-------------------       Parameters of the program (end)       -------------------
 
 
 
@@ -162,7 +179,9 @@ public class Main {
                 agent1,
                 agent2,
                 printGame,
-                printProbaOfOutputModel
+                printProbaOfOutputModel,
+                TRAINING_MODEL_1,
+                TRAINING_MODEL_2
 
         );
 
